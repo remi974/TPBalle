@@ -3,5 +3,5 @@
     <string name="help">Help</string>
     <string name="new_game">Start a New Game</string>
     <string name="scores">Best Scores</string>
-
+    <string name="about">About</string>
 </resources>

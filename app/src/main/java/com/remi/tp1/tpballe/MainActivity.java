@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -176,5 +177,28 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.app_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.new_game:
+
+                return true;
+            case R.id.help:
+
+                return true;
+
+            case R.id.about:
+                return true;
+
+            case R.id.scores:
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
