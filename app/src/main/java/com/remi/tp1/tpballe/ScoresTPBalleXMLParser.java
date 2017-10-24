@@ -62,7 +62,7 @@ public class ScoresTPBalleXMLParser {
             }
             String name = parser.getName();
             // Starts by looking for the score tag
-            if (name.equals("score")) {
+            if (name.equals("entry")) {
                 entries.add(readEntry(parser));
             } else {
                 skip(parser);
@@ -75,15 +75,12 @@ public class ScoresTPBalleXMLParser {
     // off
     // to their respective &quot;read&quot; methods for processing. Otherwise, skips the tag.
     private Score readEntry(XmlPullParser parser) throws XmlPullParserException, IOException {
-        parser.require(XmlPullParser.START_TAG, ns, "score");
+        parser.require(XmlPullParser.START_TAG, ns, "entry");
 
         String joueur = null;
         String score = null;
-        String latitude = null;
-        String longitude = null;
-        String markerLabel = null;
-
-        Date date = null;
+        String[] data = new String[3];
+        String date = null;
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -91,34 +88,55 @@ public class ScoresTPBalleXMLParser {
             }
             String name = parser.getName();
             if (name.equals("joueur")) {
-                joueur = readJoueur(parser);
+                joueur = readSingleData(parser,"joueur");
             } else if (name.equals("score")) {
-                score = readScore(parser);
+                score = readSingleData(parser,"score");
+            } else if (name.equals("date")) {
+                date = readSingleData(parser,"date");
+            } else if (name.equals("gps")) {
+                data = readGps(parser);
             } else {
                 skip(parser);
             }
         }
-        return new Score(joueur, score, latitude);
+        return new Score(joueur, score, date, data);
     }
 
     // Processes title tags in the feed.
-    private String readJoueur(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, ns, "joueur");
-        String joueur = readText(parser);
-        parser.require(XmlPullParser.END_TAG, ns, "joueur");
-        return joueur;
+    private String readSingleData(XmlPullParser parser, String tagname) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, ns, tagname);
+        String dataText = readText(parser);
+        parser.require(XmlPullParser.END_TAG, ns, tagname);
+        return dataText;
     }
 
     // Processes title tags in the feed.
-    private String readDate(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, ns, "date");
-        String date = readText(parser);
-        parser.require(XmlPullParser.END_TAG, ns, "date");
-        return date;
+    private String[] readGps(XmlPullParser parser) throws IOException, XmlPullParserException {
+
+        parser.require(XmlPullParser.START_TAG, ns, "gps");
+
+        String[] data = new String[3];
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                continue;
+            }
+            String name = parser.getName();
+            if (name.equals("latitude")) {
+                 data[0] = readSingleData(parser,"latitude");
+            } else if (name.equals("longitude")) {
+                data[1] = readSingleData(parser,"longitude");
+            } else if (name.equals("markerlabel")) {
+                data[2] = readSingleData(parser,"markerlabel");
+            } else {
+                skip(parser);
+            }
+        }
+
+        return data;
     }
 
 
-    // Processes link tags in the feed.
+    /*// Processes link tags in the feed.
     private String readPosition(XmlPullParser parser) throws IOException, XmlPullParserException {
         String link = "";
         parser.require(XmlPullParser.START_TAG, ns, "");
@@ -132,15 +150,7 @@ public class ScoresTPBalleXMLParser {
         }
         parser.require(XmlPullParser.END_TAG, ns, "link");
         return link;
-    }
-
-    // Processes summary tags in the feed.
-    private String readScore(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, ns, "score");
-        String score = readText(parser);
-        parser.require(XmlPullParser.END_TAG, ns, "score");
-        return score;
-    }
+    }*/
 
     // For the tags title and summary, extracts their text values.
     private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
@@ -169,20 +179,6 @@ public class ScoresTPBalleXMLParser {
                     depth++;
                     break;
             }
-        }
-    }
-
-    // This class represents a single entry (post) in the XML feed.
-    // It includes the data members "title," "link," and "summary."
-    public static class Score {
-        public final String title;
-        public final String link;
-        public final String summary;
-
-        private Score(String title, String summary, String link) {
-            this.title = title;
-            this.summary = summary;
-            this.link = link;
         }
     }
 }

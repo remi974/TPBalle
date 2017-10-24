@@ -27,6 +27,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements SensorEventListener/*, View.OnClickListener*/ {
 
     /**
@@ -195,6 +201,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 return true;
 
             case R.id.scores:
+
+                ScoresTPBalleXMLParser parser = new ScoresTPBalleXMLParser();
+                List<Score> alScores = null;
+                try {
+                    alScores = parser.parse(getResources().openRawResource(R.raw.scores));
+                } catch (XmlPullParserException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                for(Score score :  alScores)
+                    Log.i("Score", score.toString());
 
                 return true;
             default:
