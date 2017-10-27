@@ -18,6 +18,7 @@ package com.remi.tp1.tpballe;
  */
 
 
+import android.util.Log;
 import android.util.Xml;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -25,9 +26,12 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -38,6 +42,8 @@ import java.util.List;
 public class ScoresTPBalleXMLParser {
 
     private static final String ns = null;
+
+    private List<Score> scores = null;
 
     public List<Score> parse(InputStream in) throws XmlPullParserException, IOException {
         try {
@@ -81,6 +87,18 @@ public class ScoresTPBalleXMLParser {
         String score = null;
         String[] data = new String[3];
         String date = null;
+//        Date date = null;
+//        DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, Locale.FRANCE);
+//
+//        Date today;
+//        String output;
+//        SimpleDateFormat formatter;
+//        String pattern = "dd/MM/YYYY hh:mm aaa";
+//        formatter = new SimpleDateFormat(pattern, Locale.FRANCE);
+//        today = new Date();
+//        output = formatter.format(today);
+//        Log.i("Date" , pattern + " " + output);
+
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -122,7 +140,7 @@ public class ScoresTPBalleXMLParser {
             }
             String name = parser.getName();
             if (name.equals("latitude")) {
-                 data[0] = readSingleData(parser,"latitude");
+                data[0] = readSingleData(parser,"latitude");
             } else if (name.equals("longitude")) {
                 data[1] = readSingleData(parser,"longitude");
             } else if (name.equals("markerlabel")) {
@@ -181,4 +199,10 @@ public class ScoresTPBalleXMLParser {
             }
         }
     }
+
+    public boolean isEmpty() {
+
+        return this.scores.isEmpty();
+    }
+
 }

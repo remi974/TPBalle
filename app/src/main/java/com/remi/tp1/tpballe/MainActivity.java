@@ -2,6 +2,7 @@ package com.remi.tp1.tpballe;
 
 import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -202,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             case R.id.scores:
 
-                ScoresTPBalleXMLParser parser = new ScoresTPBalleXMLParser();
+                /*ScoresTPBalleXMLParser parser = new ScoresTPBalleXMLParser();
                 List<Score> alScores = null;
                 try {
                     alScores = parser.parse(getResources().openRawResource(R.raw.scores));
@@ -214,10 +215,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                 for(Score score :  alScores)
                     Log.i("Score", score.toString());
-
+                */
+                startScoresActivity();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    /**
+     * Launching new ScoresActivity
+     * */
+    private void startScoresActivity() {
+        Intent i = new Intent(MainActivity.this, ScoresActivity.class);
+
+        startActivity(i);
     }
 }

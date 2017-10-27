@@ -1,5 +1,9 @@
 package com.remi.tp1.tpballe;
 
+import android.support.annotation.NonNull;
+
+import java.util.Date;
+
 /**
  * Created by Rémi on 24/10/2017.
  */
@@ -14,7 +18,7 @@ public class Score {
     private String markerLabel;
     private String longitude;
     private String latitude;
-
+    private int color;
 
 
     public Score(String joueur, String score, String date, String[] data) {
@@ -36,12 +40,14 @@ public class Score {
         return joueur;
     }
 
-    public String getScore() {
-        return score;
-    }
+    public String getScore() { return score; }
 
     public String getDate() {
         return date;
+    }
+
+    public int getColor() {
+        return color;
     }
 
     public String getMarkerLabel() {
@@ -61,4 +67,9 @@ public class Score {
         return new String("Nom du joueur " + this.joueur + ", Score=" + score + ", le : " + date + "." +
                 "Latitude = " + latitude + ", Longitude = " + longitude + ", Label : " + markerLabel);
     }
+
+    /*@Override
+    public int compareTo(@NonNull Score score) {
+        return new Integer(this.score).compareTo(new Integer(score.getScore()));
+    }*/
 }

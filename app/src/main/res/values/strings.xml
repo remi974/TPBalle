@@ -4,4 +4,8 @@
     <string name="new_game">Start a New Game</string>
     <string name="scores">Best Scores</string>
     <string name="about">About</string>
+    <string name="score">Score</string>
+    <string name="date">Date</string>
+    <string name="joueur">Nom joueur</string>
+    <string name="title_activity_maps">Map</string>
 </resources>
