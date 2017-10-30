@@ -21,9 +21,19 @@ package com.remi.tp1.tpballe;
 import android.util.Log;
 import android.util.Xml;
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.Comment;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlSerializer;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -32,6 +42,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 
 /**
@@ -209,4 +229,115 @@ public class ScoresTPBalleXMLParser {
         return this.scores;
     }
 
+    public void writeXMLData(Score score_data) {
+
+        /*File newxmlfile = new File("/data/new.xml");
+        FileOutputStream fileos = null;
+        XmlSerializer serializer = Xml.newSerializer();
+
+        try{
+            newxmlfile.createNewFile();
+            fileos = new FileOutputStream(newxmlfile);
+
+            serializer.setOutput(fileos, "UTF-8");
+            serializer.startDocument(null, Boolean.valueOf(true));
+            serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+
+            serializer.startTag(null, "Scores");
+
+                serializer.startTag(null, "Child1");
+                serializer.endTag(null, "Child1");
+
+                serializer.startTag(null, "Child2");
+                serializer.attribute(null, "attribute", "value");
+                serializer.endTag(null, "Child2");
+
+                serializer.startTag(null, "Child3");
+                serializer.text("Some text inside child 3");
+                serializer.endTag(null,"Child3");
+
+            serializer.endTag(null,"Scores");
+
+            serializer.endDocument();
+            serializer.flush();
+            fileos.close();
+
+        }catch(IOException e){Log.e("IOException", "Exception in create new File(");}
+        //catch(FileNotFoundException e) {Log.e("FileNotFoundException",e.toString());}
+        catch(Exception e){Log.e("Exception","Exception occured in wroting");}
+        */
+
+        Document doc = null;
+
+        try {
+
+            doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();//db.newDocument();//create document
+        } catch (Exception e) {
+            Log.d("Exception", e.getMessage());
+        }
+
+        //Element root = doc.createElement("Scores");//create Elements
+        // find root
+        NodeList rootList = doc.getElementsByTagName("Scores");
+        Node root = rootList.item(0);
+
+        root.appendChild(createEntry(doc, score_data));
+
+        //To write on file/screen
+        TransformerFactory tf = TransformerFactory.newInstance();
+        Transformer tr = null;
+        try {
+            tr = tf.newTransformer();
+        } catch (TransformerConfigurationException e) {
+            e.printStackTrace();
+        }
+
+        Properties outFormat = new Properties();
+        outFormat.setProperty( OutputKeys.INDENT, "yes" );
+        outFormat.setProperty( OutputKeys.METHOD, "xml" );
+        outFormat.setProperty( OutputKeys.OMIT_XML_DECLARATION, "no" );
+        outFormat.setProperty( OutputKeys.VERSION, "1.0" );
+        outFormat.setProperty( OutputKeys.ENCODING, "UTF-8" );
+
+        tr.setOutputProperties( outFormat );
+        DOMSource source = new DOMSource(doc);//source
+        StreamResult res = new StreamResult(new File("src"+File.separator+"xmlparsing"+File.separator+"xmlParse1.xml"));//Destination
+        try {
+            tr.transform(source, res);//to write on file
+        } catch (TransformerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Element createEntry (Document doc, Score score_data) {
+
+        Element entry = doc.createElement("entry");//create Element
+
+        Element joueur = doc.createElement("joueur");//create Element
+        Element score = doc.createElement("score");//create Element
+        Element date = doc.createElement("date");//create Element
+        Element gps = doc.createElement("gps");//create Element
+        Element latitude = doc.createElement("latitude");//create Element
+        Element longitude = doc.createElement("longitude");//create Element
+        Element marker = doc.createElement("marker");//create Element
+
+        joueur.appendChild(doc.createTextNode(score_data.getJoueur()));
+        score.appendChild(doc.createTextNode(score_data.getScore()));
+        date.appendChild(doc.createTextNode(score_data.getDate()));
+
+        latitude.appendChild(doc.createTextNode(score_data.getLatitude()));
+        longitude.appendChild(doc.createTextNode(score_data.getLongitude()));
+        marker.appendChild(doc.createTextNode(score_data.getMarkerLabel()));
+
+        gps.appendChild(latitude);
+        gps.appendChild(longitude);
+        gps.appendChild(marker);
+
+        entry.appendChild(joueur);
+        entry.appendChild(date);
+        entry.appendChild(score);
+        entry.appendChild(gps);
+
+        return entry;
+    }
 }
