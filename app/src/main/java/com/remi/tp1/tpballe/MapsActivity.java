@@ -1,19 +1,30 @@
 package com.remi.tp1.tpballe;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-
+    private List<Score> alScores;
+    private int position = -1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +33,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        alScores = new ArrayList<Score>();
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        position = extras.getInt("position");
+
+        ScoresTPBalleXMLParser parser = new ScoresTPBalleXMLParser();
+
+        try {
+            alScores = parser.parse(getResources().openRawResource(R.raw.scores));
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Log.i("Position", "Position cliquée : " + position);
     }
 
 
@@ -37,10 +65,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        int i = -1;
+        for (Score score : alScores) {
+            i++;
+            Marker marker = mMap.addMarker(
+                    new MarkerOptions().position(
+                        new LatLng( new Double(score.getLatitude()),
+                                    new Double(score.getLongitude()))
+                    ).title(score.getJoueur() + ", Score : " + score.getScore())
+                    .snippet("Lat : " + score.getLatitude()
+                            + ", Long : " + score.getLongitude()
+                            + " le " + score.getDate())
+            );
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            if( position != -1 && position == i) {
+
+                Log.i(  "Position" ,
+                        "Position = " + position +
+                                " Latitude = " + score.getLatitude() +
+                                " Longitude = " + score.getLongitude());
+
+                // Add a marker at current location and move the camera
+                LatLng current_location = new LatLng(
+                        new Double(score.getLatitude()),
+                        new Double(score.getLongitude()));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(current_location));
+                marker.showInfoWindow();
+            }
+        }
     }
 }

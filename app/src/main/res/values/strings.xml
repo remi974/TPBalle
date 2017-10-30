@@ -8,4 +8,8 @@
     <string name="date">Date</string>
     <string name="joueur">Nom joueur</string>
     <string name="title_activity_maps">Map</string>
+    <string name="score_desc">Trier par Score Décroissant</string>
+    <string name="date_desc">Trier par date décroissante</string>
+    <string name="name_asc">Trier par nom</string>
+
 </resources>

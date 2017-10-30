@@ -46,6 +46,7 @@ public class ScoresTPBalleXMLParser {
     private List<Score> scores = null;
 
     public List<Score> parse(InputStream in) throws XmlPullParserException, IOException {
+        scores = new ArrayList<Score>();
         try {
             XmlPullParser parser = Xml.newPullParser();
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -59,8 +60,6 @@ public class ScoresTPBalleXMLParser {
 
     private List<Score> readFeed(XmlPullParser parser) throws XmlPullParserException, IOException {
 
-        List<Score> entries = new ArrayList<Score>();
-
         parser.require(XmlPullParser.START_TAG, ns, "scores");
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -69,12 +68,12 @@ public class ScoresTPBalleXMLParser {
             String name = parser.getName();
             // Starts by looking for the score tag
             if (name.equals("entry")) {
-                entries.add(readEntry(parser));
+                scores.add(readEntry(parser));
             } else {
                 skip(parser);
             }
         }
-        return entries;
+        return scores;
     }
 
     // Parses the contents of an entry. If it encounters a title, summary, or link tag, hands them
@@ -203,6 +202,11 @@ public class ScoresTPBalleXMLParser {
     public boolean isEmpty() {
 
         return this.scores.isEmpty();
+    }
+
+    public List<Score> getScores() {
+
+        return this.scores;
     }
 
 }

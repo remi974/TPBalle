@@ -1,5 +1,8 @@
 package com.remi.tp1.tpballe;
 
+import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
 
 /**
@@ -19,7 +22,20 @@ public class Sort {
     public static final Comparator<Score> ORDER_BY_DATE_DESC = new Comparator<Score>() {
 
         public int compare(Score tag1, Score tag2) {
-            return - tag1.getDate().compareTo(tag2.getDate());
+
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+            Date parsedDate1 = null;
+            Date parsedDate2 = null;
+
+            try {
+                parsedDate1 = formatter.parse(tag1.getDate());
+                parsedDate2 = formatter.parse(tag2.getDate());
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return - parsedDate1.compareTo(parsedDate2);
         }
 
     };
