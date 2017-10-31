@@ -12,6 +12,8 @@ import android.widget.ListView;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -80,7 +82,7 @@ public class ScoresActivity extends AppCompatActivity implements AdapterView.OnI
 
         ScoresTPBalleXMLParser parser = new ScoresTPBalleXMLParser();
         try {
-            scores = parser.parse(getResources().openRawResource(R.raw.scores));
+            scores = parser.parse(new FileInputStream(new File(this.getExternalCacheDir() + "scores.xml")));
         } catch (XmlPullParserException e) {
             e.printStackTrace();
         } catch (IOException e) {

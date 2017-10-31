@@ -229,7 +229,7 @@ public class ScoresTPBalleXMLParser {
         return this.scores;
     }
 
-    public void writeXMLData(Score score_data) {
+    public void writeXMLData(Score score_data, File file) {
 
         /*File newxmlfile = new File("/data/new.xml");
         FileOutputStream fileos = null;
@@ -271,20 +271,35 @@ public class ScoresTPBalleXMLParser {
 
         try {
 
-            doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();//db.newDocument();//create document
+            if(file.exists()) {
+                doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file);
+                Log.d("File", file.getName() + "exists");
+            }
+            else {
+                Log.d("File","File " + file.getName() + "doesn't exist");
+                doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();//db.newDocument();//create document
+            }
         } catch (Exception e) {
             Log.d("Exception", e.getMessage());
         }
 
-        //Element root = doc.createElement("Scores");//create Elements
         // find root
-        NodeList rootList = doc.getElementsByTagName("Scores");
-        Node root = rootList.item(0);
+        NodeList rootList = doc.getElementsByTagName("scores");
+        Node root_node = rootList.item(0);
 
-        root.appendChild(createEntry(doc, score_data));
-
+        if (root_node == null){
+            Element root = doc.createElement("scores");//create Elements
+            root.appendChild(createEntry(doc, score_data));
+            doc.appendChild(root);
+            Log.d("Root", "Node doesn't exist. Create root element.");
+        }
+        else {
+            root_node.appendChild(createEntry(doc, score_data));
+            Log.d("Root", "Node exists");
+        }
         //To write on file/screen
         TransformerFactory tf = TransformerFactory.newInstance();
+        //tf.setAttribute("indent-number",2);
         Transformer tr = null;
         try {
             tr = tf.newTransformer();
@@ -300,8 +315,9 @@ public class ScoresTPBalleXMLParser {
         outFormat.setProperty( OutputKeys.ENCODING, "UTF-8" );
 
         tr.setOutputProperties( outFormat );
+        tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
         DOMSource source = new DOMSource(doc);//source
-        StreamResult res = new StreamResult(new File("src"+File.separator+"xmlparsing"+File.separator+"xmlParse1.xml"));//Destination
+        StreamResult res = new StreamResult(file);//Destination
         try {
             tr.transform(source, res);//to write on file
         } catch (TransformerException e) {

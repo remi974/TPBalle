@@ -16,6 +16,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +48,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ScoresTPBalleXMLParser parser = new ScoresTPBalleXMLParser();
 
         try {
-            alScores = parser.parse(getResources().openRawResource(R.raw.scores));
+            alScores = parser.parse(new FileInputStream(new File(this.getExternalCacheDir() + "scores.xml")));
         } catch (XmlPullParserException e) {
             e.printStackTrace();
         } catch (IOException e) {

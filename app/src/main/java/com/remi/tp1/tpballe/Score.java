@@ -68,6 +68,18 @@ public class Score {
                 "Latitude = " + latitude + ", Longitude = " + longitude + ", Label : " + markerLabel);
     }
 
+    public void setMarkerLabel(String markerLabel) {
+        this.markerLabel = markerLabel;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
     /*@Override
     public int compareTo(@NonNull Score score) {
         return new Integer(this.score).compareTo(new Integer(score.getScore()));

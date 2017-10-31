@@ -30,6 +30,7 @@ import android.widget.ToggleButton;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -199,6 +200,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 return true;
 
             case R.id.about:
+
+                ScoresTPBalleXMLParser parser = new ScoresTPBalleXMLParser();
+                Score score = new Score("Trump", "2", "21-10-2009");
+                score.setLatitude("25");
+                score.setLongitude("25");
+                score.setMarkerLabel("");
+
+                File f = new File(this.getExternalCacheDir() + "scores.xml");
+                Log.d("File", this.getExternalCacheDir() + "scores.xml");
+                parser.writeXMLData(score, f);
                 return true;
 
             case R.id.scores:
