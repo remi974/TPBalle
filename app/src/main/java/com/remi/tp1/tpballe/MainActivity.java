@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager mSensorManager;
 
     /**
-     * Le capteur Sensoriel utilisé (ici le Gyroscope).
+     * Le capteur Sensoriel utilisé (Accelerometer).
      */
     private Sensor mySensor;
 
@@ -53,52 +53,42 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private boolean sensorSupported;
 
     /**
-     * Le Bouton ON/OFF de la vue principale.
-     */
-    private ToggleButton btn_toggle;
-
-    /**
-     * Le bouton permettant d'augmenter la vitesse de la balle.
-     */
-    private Button btn_plus;
-
-    /**
-     * Le bouton permettant de réduire la vitesse de la balle.
-     */
-    private Button btn_moins;
-
-    /**
      * Permet de dessiner des formes à l'intérieur.
      */
     private ImageView image;
 
-
+    /**
+     * That's where you can draw things and animate them to play the game.
+     */
     private AnimatedView mAnimatedView = null;
 
+    /**
+     * Called when starting app.
+     * @param savedInstanceState Stores data when switching to portrait/landscape
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_main);
 
+        //Set Window in Portrait Mode with Fullscreen.
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        this.btn_toggle = (ToggleButton) findViewById(R.id.btn_toggle);
-        this.btn_plus = (Button) findViewById(R.id.btn_plus);
-        this.btn_moins = (Button) findViewById(R.id.btn_moins);
-
+        //Get the Acceloremeter Sensor for your App.
         mSensorManager = (SensorManager) getSystemService(Service.SENSOR_SERVICE);
         mySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
+        //Link the view with an attribute to draw.
         image = (ImageView) findViewById(R.id.imageView);
         //createBitMap();
 
-
+        //Starts animation and/or game.
         mAnimatedView = new AnimatedView(this);
+
         //Set our content to a view, not like the traditional setting to a layout
         setContentView(mAnimatedView);
 
@@ -106,7 +96,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
-
+    /**
+     * Called when Sensor data varies.
+     * @param sensorEvent Holds Sensor data
+     */
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
@@ -120,6 +113,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
+    /**
+     * Called when you change acquisition rate.
+     * @param sensor
+     * @param i
+     */
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
@@ -138,6 +136,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 */
+
+    /**
+     * Called when app is active again.
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -148,7 +150,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //}
     }
 
-
+    /**
+     * Called when your app runs in background or is stopped/paused. Idle mode.
+     */
     @Override
     public void onPause() {
 
@@ -160,13 +164,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     /**
-     *
+     *  Draw the ball on Canvas.
      */
     private void createBitMap() {
 
         Bitmap bitMap = Bitmap.createBitmap(1024, 1024, Bitmap.Config.ARGB_8888);  //creates bmp
         bitMap = bitMap.copy(bitMap.getConfig(), true);     //lets bmp to be mutable
-        Canvas canvas = new Canvas(bitMap);                 //draw a canvas in defined bmp
+        Canvas canvas = new Canvas(bitMap);  //draw a canvas in defined bmp
 
         Paint paint = new Paint();
         // smooths
@@ -174,12 +178,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         paint.setColor(Color.RED);
         paint.setStyle(Paint.Style.FILL);
         paint.setStrokeWidth(4.5f);
+
         //Opacity
         //p.setAlpha(0x80); //
         canvas.drawCircle(50, 50, 30, paint);
         image.setImageBitmap(bitMap);
     }
 
+    /**
+     * Used to manage your menu linked with a layout you designed.
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -187,31 +197,45 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         return true;
     }
 
+    /**
+     * Called when you click an item on the menu.
+     * @param item The Selected Item.
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         // Handle item selection
         switch (item.getItemId()) {
+
+            //Starts a new game
             case R.id.new_game:
 
                 return true;
+
+            //Show a pop up on how to play.
             case R.id.help:
 
                 return true;
 
+            //Show a pop up about details in the game.
+
             case R.id.about:
 
+                //Manage XML File for data persistancy. We need to store Scores of previous players.
                 ScoresTPBalleXMLParser parser = new ScoresTPBalleXMLParser();
                 Score score = new Score("Trump", "2", "21-10-2009");
                 score.setLatitude("25");
                 score.setLongitude("25");
                 score.setMarkerLabel("");
 
+                //Write XML File in ExternalStorage of Device.
                 File f = new File(this.getExternalCacheDir() + "scores.xml");
                 Log.d("File", this.getExternalCacheDir() + "scores.xml");
                 parser.writeXMLData(score, f);
                 return true;
 
+            //Starts a new Activity when you click to visualize the scores.
             case R.id.scores:
 
                 /*ScoresTPBalleXMLParser parser = new ScoresTPBalleXMLParser();
@@ -235,11 +259,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     /**
-     * Launching new ScoresActivity
+     * Launching new ScoresActivity. Show the details of previous players' scores.
      * */
     private void startScoresActivity() {
         Intent i = new Intent(MainActivity.this, ScoresActivity.class);
-
         startActivity(i);
     }
 }

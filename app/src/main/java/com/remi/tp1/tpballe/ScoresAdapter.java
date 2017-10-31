@@ -20,6 +20,7 @@ import java.util.List;
  */
 
 public class ScoresAdapter extends ArrayAdapter<Score> {
+
     public ScoresAdapter(@NonNull Context context, int resource) {
         super(context, resource);
     }
@@ -48,6 +49,14 @@ public class ScoresAdapter extends ArrayAdapter<Score> {
         super(context, 0, objects);
     }
 
+    /**
+     * Get a View that displays the data at the specified position in the data set.
+     * @param position The position of the item within the adapter's data set of the item whose view we want.
+     * @param convertView The old view to reuse, if possible. Note: You should check that this view is non-null and of an appropriate type before using. If it is not possible to convert this view to display the correct data, this method can create a new view. Heterogeneous lists can specify their number of view types, so that this View is always of the right type (see getViewTypeCount() and getItemViewType(int)).
+     * @param parent The parent that this view will eventually be attached to    This value must never be null.
+     * @return A View corresponding to the data at the specified position.
+    This value will never be null.
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -61,7 +70,7 @@ public class ScoresAdapter extends ArrayAdapter<Score> {
             viewHolder.pseudo = (TextView) convertView.findViewById(R.id.joueur);
             viewHolder.date = (TextView) convertView.findViewById(R.id.date);
             viewHolder.score = (TextView) convertView.findViewById(R.id.score);
-            viewHolder.avatar = (ImageView) convertView.findViewById(R.id.avatar);
+            //viewHolder.avatar = (ImageView) convertView.findViewById(R.id.avatar);
             convertView.setTag(viewHolder);
         }
 
@@ -70,16 +79,17 @@ public class ScoresAdapter extends ArrayAdapter<Score> {
         viewHolder.pseudo.setText(score.getJoueur());
         viewHolder.date.setText(score.getDate().toString());
         viewHolder.score.setText(score.getScore());
-        viewHolder.avatar.setImageDrawable(new ColorDrawable(score.getColor()));
+        //viewHolder.avatar.setImageDrawable(new ColorDrawable(score.getColor()));
 
         return convertView;
     }
+
 
     private class TweetViewHolder{
         public TextView pseudo;
         public TextView date;
         public TextView score;
-        public ImageView avatar;
+        //public ImageView avatar;
 
     }
 }

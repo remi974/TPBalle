@@ -22,23 +22,43 @@ import java.util.List;
 
 public class ScoresActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
+    /**
+     * The List of Items on the screen.
+     */
     private ListView mListView;
 
+    /**
+     * The scores of previous players.
+     */
     private List<Score> scores = null;
 
+    /**
+     * The adapter to personnalize how you manage the elements of each row.
+     */
     private ScoresAdapter adapter;
+
+    /**
+     * Called when starting activity.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scores);
-        scores = new ArrayList<Score>();
+        setContentView(R.layout.activity_scores); //Link the activity with the layout you want to show.
 
+        scores = new ArrayList<Score>();
         mListView = (ListView) findViewById(R.id.listView);
         mListView.setOnItemClickListener(this);
 
+        //Show all items in the List on the screen.
         afficherListeScores();
     }
 
+    /**
+     * Used to manage your menu linked with a layout you designed.
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -46,25 +66,34 @@ public class ScoresActivity extends AppCompatActivity implements AdapterView.OnI
         return true;
     }
 
+    /**
+     * Called when you click an item on the menu.
+     * @param item The Selected Item.
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         // Handle item selection
         switch (item.getItemId()) {
+
+            //Sort the List from best to lowest score.
             case R.id.score_desc:
 
                 Collections.sort(scores, Sort.ORDER_BY_SCORE_DESC);
-                adapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged(); //Send a notification to let the listeners know that data have been updated.
 
                 return true;
 
+            //Sort the List in alphabetical order.
             case R.id.name_asc:
 
                 Collections.sort(scores, Sort.ORDER_BY_JOUEUR_ASC);
-                adapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged(); //Send a notification to let the listeners know that data have been updated.
 
                 return true;
 
+            //Sort the List from newest to oldest game.
             case R.id.date_desc:
 
                 Collections.sort(scores, Sort.ORDER_BY_DATE_DESC);
@@ -77,9 +106,12 @@ public class ScoresActivity extends AppCompatActivity implements AdapterView.OnI
         }
     }
 
+    /**
+     * Parse data from XML to get the Scores and set the adapter to the list to show details of each player's game.
+     */
     private void afficherListeScores(){
-        //List<Tweet> tweets = genererTweets();
 
+        //Read scores XML holding previous games stored in ExternalCache.
         ScoresTPBalleXMLParser parser = new ScoresTPBalleXMLParser();
         try {
             scores = parser.parse(new FileInputStream(new File(this.getExternalCacheDir() + "scores.xml")));
@@ -89,6 +121,7 @@ public class ScoresActivity extends AppCompatActivity implements AdapterView.OnI
             e.printStackTrace();
         }
 
+        //Default sorting set to best scores to lowest.
         Collections.sort(scores, Sort.ORDER_BY_SCORE_DESC);
 
         adapter = new ScoresAdapter(ScoresActivity.this, scores);
@@ -98,15 +131,26 @@ public class ScoresActivity extends AppCompatActivity implements AdapterView.OnI
         mListView.setOnItemClickListener(this);
     }
 
+    /**
+     * Callback method to be invoked when an item in this AdapterView has been clicked.
+     * Implementers can call getItemAtPosition(position) if they need to access the data associated with the selected item.
+     *
+     * This will start a new MapActivity using the item that was clicked.
+     *
+     * @param adapterView The AdapterView where the click happened.
+     * @param view The view within the AdapterView that was clicked (this will be a view provided by the adapter).
+     * @param i The position of the view in the adapter.
+     * @param l The row id of the item that was clicked.
+     */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
 
         startScoresActivity(i);
     }
 
     /**
-     * Launching new ScoresActivity
+     * Launching new MapsActivity storing the position of the item in the list in an intent.
+     * @param position The position of the item in the list.
      * */
     private void startScoresActivity(int position) {
         Intent i = new Intent(ScoresActivity.this, MapsActivity.class);

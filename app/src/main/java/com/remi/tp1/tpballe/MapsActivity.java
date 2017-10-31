@@ -25,11 +25,27 @@ import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    /**
+     * The Google Map used in Activity.
+     */
     private GoogleMap mMap;
+
+    /**
+     * The scores of previous players.
+     */
     private List<Score> alScores;
+
+    /**
+     * Indicates which item you clicked on the list.
+     * -1 is default value when youdon't click.
+     */
     private int position = -1;
 
 
+    /**
+     * Starts the Activity to show a Google Map.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,13 +56,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        //Builds objects.
         alScores = new ArrayList<Score>();
+        ScoresTPBalleXMLParser parser = new ScoresTPBalleXMLParser();
+
+        //Get the item position in the list from intent.
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         position = extras.getInt("position");
 
-        ScoresTPBalleXMLParser parser = new ScoresTPBalleXMLParser();
-
+        //Retrieve data from XML File (Data persistancy).
         try {
             alScores = parser.parse(new FileInputStream(new File(this.getExternalCacheDir() + "scores.xml")));
         } catch (XmlPullParserException e) {
@@ -71,9 +90,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.getUiSettings().setZoomControlsEnabled(true);//set +/- zoom on the map.
         int i = -1;
 
+        //Show all markers on map based on data from XML
         for (Score score : alScores) {
             i++;
             Marker marker = mMap.addMarker(
@@ -86,6 +106,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             + " le " + score.getDate())
             );
 
+            //That's the marker we clicked on before.
+            //Animate the Map to zoom/show current marker.
             if( position != -1 && position == i) {
 
                 Log.i(  "Position" ,
@@ -97,7 +119,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 LatLng current_location = new LatLng(
                         new Double(score.getLatitude()),
                         new Double(score.getLongitude()));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(current_location));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(current_location, 15));
                 marker.showInfoWindow();
             }
         }
